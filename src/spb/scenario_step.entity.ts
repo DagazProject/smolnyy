@@ -33,6 +33,13 @@ export class scenario_step {
 
   @Index()
   @Column({ nullable: true })
+  nextstep_id: number;
+  @ManyToOne(type => scenario_step)
+  @JoinColumn({ name: "nextstep_id" })
+  nextstep: scenario_step;
+
+  @Index()
+  @Column({ nullable: true })
   audio_id: number;
   @ManyToOne(type => audio)
   @JoinColumn({ name: "audio_id" })
