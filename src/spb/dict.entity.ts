@@ -1,8 +1,10 @@
 import { Entity, Column, PrimaryColumn, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { dict_type } from './dict_type.entity';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @Entity()
 export class dict {
+  @ApiProperty()
   @PrimaryColumn()
   id: number;
 
@@ -13,6 +15,7 @@ export class dict {
   @JoinColumn({ name: "type_id" })
   type: dict_type;
 
+  @ApiProperty()
   @Index()
   @Column({ nullable: true })
   parent_id: number;
@@ -20,12 +23,15 @@ export class dict {
   @JoinColumn({ name: "parent_id" })
   parent: dict;
 
+  @ApiProperty()
   @Column({ type: "varchar", length: 100 })
   name: string;  
 
+  @ApiPropertyOptional()
   @Column({ type: "text", nullable: true })
   description: string;  
 
+  @ApiProperty()
   @Column({ type: "integer", nullable: false, default: 1 })
   priority: number;
 }

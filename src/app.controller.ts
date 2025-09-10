@@ -1,12 +1,23 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AppService } from './app.service';
+import { dict_type } from './spb/dict_type.entity';
+import { dict } from './spb/dict.entity';
+import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly service: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('dict')
+  @ApiOkResponse({ description: 'Successfully.'})
+  async getDictTypes(): Promise<dict_type[]> {
+    return this.service.getDictTypes();
+  }
+
+  @Get('dict/:id')
+  @ApiParam({name: 'id', type: 'integer'})
+  @ApiOkResponse({ description: 'Successfully.'})
+  async getDict(@Param('id') id): Promise<dict[]> {
+    return this.service.getDict(id);
   }
 }

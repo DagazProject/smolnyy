@@ -1,11 +1,16 @@
-import { Entity, Column, Index, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, Index, ManyToOne, JoinColumn, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { session_type } from './session_type.entity';
 import { scenario_step } from './scenario_step.entity';
 
 @Entity()
+@Unique(["call_id"])
 export class session {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Index({ unique: true })
+  @Column({ nullable: false, type: "varchar", length: 36 })
+  call_id: string;
 
   @Index()
   @Column({ nullable: false })
