@@ -51,4 +51,54 @@ export class AppService {
     });
     return r;
   }
+
+  async getScenario(id: number): Promise<string> {
+    let line = '';
+    const x = await this.repository.query(
+                `select b.abbr || '[' || a.id || ']' || a.name ||
+                        case
+                          when a.is_default then '*'
+                          else ''
+                        end as line
+                 from   scenario a
+                 inner  join scenario_type b on (b.id = a.type_id)
+                 where  a.id = $1`, [id]);
+    x.forEach(x => {
+      line = line + x.line + '\n';
+    });
+    const y = await this.repository.query(
+                `with recursive a as (
+                      select id, name, type_id, order_num, audio_id, paramtype_id, dict_id, value, nextstep_id,
+                          '--' as prefix, ARRAY[order_num] as path
+                      from   scenario_step
+                      where  scenario_id = $1 and parent_id is null
+                      union  all
+                      select b.id, b.name, b.type_id, b.order_num, b.audio_id, b.paramtype_id, b.dict_id, b.value, b.nextstep_id,
+                             a.prefix || '--' as prefix, a.path || b.order_num as path
+                      from   a
+                      inner  join scenario_step b on (b.parent_id = a.id)
+                    )
+                    select a.prefix || b.abbr || '[' || a.id || ']' || a.name ||
+                           case
+                             when a.type_id = 1 then coalesce('/' || c.name || '/[' || c.id || ']', '!!!NO AUDIO!!!')
+                             when a.type_id = 2 then coalesce('<' || d.description || '>[' || d.id || ']', '!!!NO PARAM!!!')
+                             when a.type_id in (3, 5) then coalesce('[' || a.nextstep_id || ']', '!!!NO ID!!!')
+                             when a.type_id = 4 then coalesce('[' || a.paramtype_id || ']' || coalesce('=[' || a.dict_id || ']', ''), '!!!NO PARAM!!!')
+                             else ''
+                           end ||
+                           case
+                             when not a.type_id in (3, 5) and not a.nextstep_id is null then '^[' || a.nextstep_id || ']'
+                             else ''
+                           end
+                           as line
+                    from   a
+                    inner  join step_type b on (b.id = a.type_id)
+                    left   join audio c on (c.id = a.audio_id)
+                    left   join param_type d on (d.id = a.paramtype_id)
+                    order  by a.path`, [id]);
+    y.forEach(x => {
+      line = line + x.line + '\n';
+    });
+    return line;
+  }
 }

@@ -16,6 +16,9 @@ export class step_type {
   @Column({ type: "varchar", length: 100 })
   name: string;  
 
+  @Column({ nullable: false, type: "varchar", length: 1 })
+  abbr: string;  
+
   @Column({ type: "text", nullable: true })
   description: string;  
 }

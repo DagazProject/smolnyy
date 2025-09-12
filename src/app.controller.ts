@@ -20,4 +20,11 @@ export class AppController {
   async getDict(@Param('id') id): Promise<dict[]> {
     return this.service.getDict(id);
   }
+
+  @Get('scenario/:id')
+  @ApiParam({name: 'id', type: 'integer'})
+  @ApiOkResponse({ description: 'Successfully.'})
+  async getScenario(@Param('id') id): Promise<string> {
+    return this.service.getScenario(id);
+  }
 }

@@ -7,4 +7,7 @@ export class scenario_type {
 
   @Column({ type: "varchar", length: 100 })
   name: string;  
+
+  @Column({ nullable: false, type: "varchar", length: 1 })
+  abbr: string;  
 }
