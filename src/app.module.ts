@@ -30,20 +30,28 @@ import { action } from './spb/action.entity';
 import { scenario_type } from './spb/scenario_type.entity';
 import { command } from './spb/command.entity';
 import { dialog_logs } from './spb/dialog_logs.entity';
+import { users } from './spb/users.entity';
+import { tokens } from './spb/tokens.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './spb/constants';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
       type: 'postgres',
-      host: '127.0.0.1',
+      host: '172.20.20.42',
       port: 5432,
-      username: 'user',
-      password: 'pass',
-      database: 'db',
-      entities: [event_source, event_type, event, scenario, step_type, scenario_step, session_type, session, event_rule, session_log, param_type, session_param, setting_type, setting_value, dict_type, action_type, provider, dict, audio, dict_value, speaker, speaker_audio, dict_synonym, action, scenario_type, command, dialog_logs],
+      username: 'medonline_db_test_user',
+      password: '3zPZUIZ@N)qSe3X#',
+      database: 'spb',
+      entities: [event_source, event_type, event, scenario, step_type, scenario_step, session_type, session, event_rule, session_log, param_type, session_param, setting_type, setting_value, dict_type, action_type, provider, dict, audio, dict_value, speaker, speaker_audio, dict_synonym, action, scenario_type, command, dialog_logs, users, tokens],
       synchronize: true,
      }), 
      TypeOrmModule.forFeature([dict_type]),
      SpbModule,
+     JwtModule.register({
+        secret: jwtConstants.secret,
+        signOptions: { expiresIn: '36000s' },
+     })
   ],
   controllers: [AppController],
   providers: [AppService],

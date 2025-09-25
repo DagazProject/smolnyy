@@ -1,16 +1,61 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { dict_type } from './spb/dict_type.entity';
 import { dict } from './spb/dict.entity';
+import { JwtService } from '@nestjs/jwt';
+import { tokens } from './spb/tokens.entity';
+
+const EXP_SECONDS: number = 36000;
 
 @Injectable()
 export class AppService {
 
+
   constructor(
     @InjectRepository(dict_type)
     private repository: Repository<dict_type>,
+    private jwtService: JwtService
   ) {}  
+
+  async checkToken(id: number, val: string): Promise<boolean> {
+      const x = await this.repository.query(
+        `select count(*) as cnt
+         from   tokens
+         where  user_id = $1 and value_str = $2
+         and    now() < expired`, [id, val]);
+      return x[0].cnt;
+  }
+
+  async getToken(login: string, pass: string): Promise<{ access_token: string }> {
+      const x = await this.repository.query(
+        `select id, name
+         from   users
+         where  login = $1 and pass = $2`, [login, pass]);
+      if (!x || x.length != 1) {
+          throw new UnauthorizedException("Incorrect user or password");
+      }
+      const payload = { sub: x[0].id, username: x[0].name };
+      const token = await this.jwtService.signAsync(payload);
+      await this.repository.createQueryBuilder("tokens")
+      .delete()
+      .from(tokens)
+      .where("tokens.user_id = :user_id", { user_id: x[0].id })
+      .execute();
+      let t: tokens = new tokens();
+      t.user_id = x[0].id;
+      t.value_str = token;
+      t.created = new Date();
+      t.expired = new Date(t.created.getTime() + EXP_SECONDS * 1000);
+      await this.repository.createQueryBuilder("tokens")
+      .insert()
+      .into(tokens)
+      .values(t)
+      .execute();
+      return {
+        access_token: token,
+      };
+  }
 
   async getDictTypes(): Promise<dict_type[]> {
     const x = await this.repository.query(
