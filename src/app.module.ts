@@ -38,13 +38,13 @@ import { jwtConstants } from './spb/constants';
 @Module({
   imports: [TypeOrmModule.forRoot({
       type: 'postgres',
-      host: '172.20.20.42',
+      host: '127.0.0.1',
       port: 5432,
-      username: 'medonline_db_test_user',
-      password: '3zPZUIZ@N)qSe3X#',
-      database: 'spb',
+      username: 'user',
+      password: 'pass',
+      database: 'db',
       entities: [event_source, event_type, event, scenario, step_type, scenario_step, session_type, session, event_rule, session_log, param_type, session_param, setting_type, setting_value, dict_type, action_type, provider, dict, audio, dict_value, speaker, speaker_audio, dict_synonym, action, scenario_type, command, dialog_logs, users, tokens],
-      synchronize: true,
+      synchronize: false,
      }), 
      TypeOrmModule.forFeature([dict_type]),
      SpbModule,
@@ -57,3 +57,4 @@ import { jwtConstants } from './spb/constants';
   providers: [AppService],
 })
 export class AppModule {}
+
