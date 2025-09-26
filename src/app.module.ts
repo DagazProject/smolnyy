@@ -34,6 +34,7 @@ import { users } from './spb/users.entity';
 import { tokens } from './spb/tokens.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './spb/constants';
+import { param_kind } from './spb/param_kind.entity';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -43,7 +44,7 @@ import { jwtConstants } from './spb/constants';
       username: 'user',
       password: 'pass',
       database: 'db',
-      entities: [event_source, event_type, event, scenario, step_type, scenario_step, session_type, session, event_rule, session_log, param_type, session_param, setting_type, setting_value, dict_type, action_type, provider, dict, audio, dict_value, speaker, speaker_audio, dict_synonym, action, scenario_type, command, dialog_logs, users, tokens],
+      entities: [event_source, event_type, event, scenario, step_type, scenario_step, session_type, session, event_rule, session_log, param_type, session_param, setting_type, setting_value, dict_type, action_type, provider, dict, audio, dict_value, speaker, speaker_audio, dict_synonym, action, scenario_type, command, dialog_logs, users, tokens, param_kind],
       synchronize: false,
      }), 
      TypeOrmModule.forFeature([dict_type]),

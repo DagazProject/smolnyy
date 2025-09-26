@@ -18,13 +18,15 @@ export class AppService {
     private jwtService: JwtService
   ) {}  
 
-  async checkToken(id: number, val: string): Promise<boolean> {
+  async checkToken(id: number, val: string): Promise<void> {
       const x = await this.repository.query(
         `select count(*) as cnt
          from   tokens
          where  user_id = $1 and value_str = $2
          and    now() < expired`, [id, val]);
-      return x[0].cnt;
+      if (x[0].cnt == 0) {
+         throw new UnauthorizedException("Token not found");
+      }
   }
 
   async getToken(login: string, pass: string): Promise<{ access_token: string }> {

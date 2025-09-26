@@ -24,6 +24,6 @@ export class event {
   @Column({ type: "json" })
   data: string;  
 
-  @Column({default: () => "now()"})
-  created: Date;
+  @Column({ nullable: false })
+  time_offset: number;
 }
